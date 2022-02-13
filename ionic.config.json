@@ -1,0 +1,7 @@
+{
+  "name": "Habu",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
