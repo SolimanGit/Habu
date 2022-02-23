@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "Habu",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}

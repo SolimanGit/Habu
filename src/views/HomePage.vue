@@ -21,12 +21,19 @@
         <MessageListItem v-for="message in messages" :key="message.id" :message="message" />
       </ion-list>
     </ion-content>
+    <ion-footer>
+      <ion-toolbar>
+        <MenuBottom></MenuBottom>
+
+      </ion-toolbar>
+    </ion-footer>
   </ion-page>
 </template>
 
 <script lang="ts">
-import { IonContent, IonHeader, IonList, IonPage, IonRefresher, IonRefresherContent, IonTitle, IonToolbar } from '@ionic/vue';
+import { IonContent, IonHeader,IonFooter, IonList, IonPage, IonRefresher, IonRefresherContent, IonTitle, IonToolbar } from '@ionic/vue';
 import MessageListItem from '@/components/MessageListItem.vue';
+import MenuBottom from '@/views/HomeTabs.vue';
 import { defineComponent } from 'vue';
 import { getMessages } from '@/data/messages';
 
@@ -47,13 +54,15 @@ export default defineComponent({
   components: {
     IonContent,
     IonHeader,
+    IonFooter,
     IonList,
     IonPage,
     IonRefresher,
     IonRefresherContent,
     IonTitle,
     IonToolbar,
-    MessageListItem
-  },
+    MessageListItem,
+    MenuBottom,
+},
 });
 </script>
