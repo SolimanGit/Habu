@@ -59,7 +59,7 @@ export default defineComponent({
   mounted() {
     axios
       .get(
-        `https://api.mangadex.org/manga?order[followedCount]=desc&limit=30&includes[]=cover_art`
+        `https://api.mangadex.org/manga/f9c33607-9180-4ba6-b85c-e4b5faee7192?includes[]=author&includes[]=artist&includes[]=cover_art`
       )
       .then((res) => {
         this.items.push(...res.data.data);
