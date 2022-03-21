@@ -13,6 +13,14 @@ const routes: Array<RouteRecordRaw> = [
         redirect: 'library',
       },
       {
+        path: 'log',
+        component: () => import('@/views/LogIn.vue'),
+      },
+      {
+        path: 'createAccount',
+        component: () => import('@/views/CreateAccount.vue'),
+      },
+      {
         path: 'library',
         component: () => import('@/views/HomeLibrary.vue'),
       },

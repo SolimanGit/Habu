@@ -1,6 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
+import * as Realm from "realm-web";
+ 
+new Realm.App({ id: 'application-habu-wbdom' });
+
 
 import { IonicVue } from '@ionic/vue';
 
