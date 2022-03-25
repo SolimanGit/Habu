@@ -11,7 +11,9 @@
         <ion-item v-for="item in items" :key="item.id">
           <ion-thumbnail slot="start">
             <img
-              :src='`https://uploads.mangadex.org/covers/${ item.id }/${find_cover(item)}.256.jpg`'
+              :src="`https://uploads.mangadex.org/covers/${
+                item.id
+              }/${find_cover(item)}.256.jpg`"
             />
           </ion-thumbnail>
           {{ item.attributes.title }}
@@ -57,12 +59,23 @@ export default defineComponent({
     };
   },
   mounted() {
+    // axios
+    //   .get(
+    //     `https://api.mangadex.org/manga?order[followedCount]=desc&limit=30&includes[]=cover_art`
+    //   )
+    //   .then((res) => {
+    //     this.items.push(...res.data.data);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
     axios
       .get(
-        `https://api.mangadex.org/manga?order[followedCount]=desc&limit=30&includes[]=cover_art`
+        `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/mangas`
       )
       .then((res) => {
-        this.items.push(...res.data.data);
+        console.log(res);
+        // this.items.push(...res.data.data);
       })
       .catch((err) => {
         console.log(err);
@@ -88,12 +101,14 @@ export default defineComponent({
           console.log(err);
         });
     },
-    find_cover(item){
-        const cover_id = item.relationships.find(element => element.type=="cover_art")
-        // const fileName = cover_id.attributes.fileName.split('.')
-        // console.log(fileName)
-        return cover_id.attributes.fileName
-    }
+    find_cover(item) {
+      const cover_id = item.relationships.find(
+        (element) => element.type == "cover_art"
+      );
+      // const fileName = cover_id.attributes.fileName.split('.')
+      // console.log(fileName)
+      return cover_id.attributes.fileName;
+    },
   },
   components: {
     IonHeader,
