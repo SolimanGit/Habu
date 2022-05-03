@@ -6,20 +6,20 @@
           <ion-title>Explorer</ion-title>
         </ion-toolbar>
       </ion-header>
-
+      <SearchBar />
       <ion-list>
-        <ion-item v-for="item in items" :key="item.id">
-          <ion-thumbnail slot="start">
-            <img
-              :src="`https://uploads.mangadex.org/covers/${
-                item.id
-              }/${find_cover(item)}.256.jpg`"
-            />
-          </ion-thumbnail>
-          {{ item.attributes.title }}
+        <ion-item
+          v-for="item in items"
+          :key="item.id"
+          button
+          @click="goDetail(true, item)"
+        >
+          <MangaThumbnail :item="item"></MangaThumbnail>
         </ion-item>
       </ion-list>
-
+      <ion-modal :is-open="openModalDetail" @didDismiss="goDetail(false)">
+        <MediaDetail :item="itemDetail" />
+      </ion-modal>
       <ion-infinite-scroll
         @ionInfinite="loadData($event)"
         threshold="100px"
@@ -46,10 +46,13 @@ import {
   IonContent,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  IonThumbnail,
+  IonModal,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import axios from "axios";
+import MediaDetail from "@/components/MediaDetail";
+import SearchBar from "@/components/SearchBar";
+import MangaThumbnail from "@/components/MangaThumbnail";
 export default defineComponent({
   name: "HomeExplorer",
   data() {
@@ -58,24 +61,36 @@ export default defineComponent({
       isDisabled: false,
     };
   },
-  mounted() {
-    // axios
-    //   .get(
-    //     `https://api.mangadex.org/manga?order[followedCount]=desc&limit=30&includes[]=cover_art`
-    //   )
-    //   .then((res) => {
-    //     this.items.push(...res.data.data);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
+  setup() {
+    // function goDetail(state,item) {
+    //   provide("machin", "itemmmmmmmm");
+    //   this.$router.push({
+    //     name: "MediaDetail",
+    //     params: {
+    //       id: item.id,
+    //     },
     //   });
+    // }
+    const openModalDetail = ref(false);
+    const itemDetail = ref(null);
+    const goDetail = (state, item) => {
+      openModalDetail.value = state;
+      item ? (itemDetail.value = item) : null;
+    };
+    return {
+      goDetail,
+      openModalDetail,
+      itemDetail,
+    };
+  },
+  mounted() {
     axios
       .get(
         `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/mangas`
       )
       .then((res) => {
         console.log(res);
-        // this.items.push(...res.data.data);
+        this.items.push(...res.data.data);
       })
       .catch((err) => {
         console.log(err);
@@ -88,7 +103,8 @@ export default defineComponent({
     loadData(e) {
       axios
         .get(
-          `https://api.mangadex.org/manga?order[followedCount]=desc&limit=30&includes[]=cover_art&offset=${this.items.length}`
+          // `https://api.mangadex.org/manga?order[followedCount]=desc&limit=30&includes[]=cover_art&offset=${this.items.length}`
+          `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/mangas?offset=${this.items.length}`
         )
         .then((res) => {
           this.items.push(...res.data.data);
@@ -101,14 +117,6 @@ export default defineComponent({
           console.log(err);
         });
     },
-    find_cover(item) {
-      const cover_id = item.relationships.find(
-        (element) => element.type == "cover_art"
-      );
-      // const fileName = cover_id.attributes.fileName.split('.')
-      // console.log(fileName)
-      return cover_id.attributes.fileName;
-    },
   },
   components: {
     IonHeader,
@@ -120,7 +128,10 @@ export default defineComponent({
     IonContent,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
-    IonThumbnail,
+    IonModal,
+    MediaDetail,
+    SearchBar,
+    MangaThumbnail,
   },
 });
 </script>

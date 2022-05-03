@@ -14,6 +14,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'log',
+        name: 'Log',
         component: () => import('@/views/LogIn.vue'),
       },
       {
@@ -28,6 +29,12 @@ const routes: Array<RouteRecordRaw> = [
         path: 'explorer',
         component: () => import('@/views/HomeExplorer.vue'),
       },
+      // {
+      //       path: 'detail/:id',
+      //       name: 'MediaDetail',
+      //       props: true,
+      //       component: () => import('@/views/MediaDetail.vue'),
+      // },
       {
         path: 'news',
         component: () => import('@/views/HomeNews.vue'),

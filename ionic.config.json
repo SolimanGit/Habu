@@ -1,7 +1,10 @@
 {
   "name": "Habu",
   "integrations": {
-    "capacitor": {}
+    "capacitor": {
+      "url": "http://192.168.1.26:8100/",
+      "cleartext": true
+    }
   },
   "type": "vue"
 }

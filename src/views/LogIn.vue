@@ -26,6 +26,13 @@
             >
           </ion-col>
         </ion-row>
+        <ion-row responsive-sm>
+          <ion-col>
+            <ion-button @click="doLoginAnilist()" expand="full"
+              >Log In with Anilist</ion-button
+            >
+          </ion-col>
+        </ion-row>
       </form>
     </ion-content>
   </ion-page>
@@ -34,6 +41,7 @@
 import * as Realm from "realm-web";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import axios from "axios";
 import {
   IonLabel,
   IonPage,
@@ -77,11 +85,31 @@ export default {
         console.log("Oops", error);
       }
     };
+    const doLoginAnilist = () => {
+      //todo mettre le client dans une variable d'environnement
+
+      axios
+        .get(
+          `https://anilist.co/api/v2/oauth/authorize?client_id=8060&response_type=token`,
+          {
+            headers: {
+              "Access-Control-Allow-Credentials": true,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     return {
       app,
       email,
       password,
       doLogin,
+      doLoginAnilist,
     };
   },
 };
