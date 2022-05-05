@@ -94,6 +94,7 @@ export default {
           userID: app.currentUser.id,
           firstName: firstName.value,
           lastName: lastName.value,
+          feed: []
         });
         if (res) router.push("explorer");
       } catch (error) {

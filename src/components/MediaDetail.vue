@@ -32,6 +32,8 @@
         </ion-row>
       </ion-grid>
       <h1 class="text-3xl underline text-red">OKOKOOK</h1>
+      <ion-button v-if="!mediaFollowed" @click="addToFeed()">Follow</ion-button>
+      <ion-button v-else @click="removeFromFeed()">unfollow</ion-button>
       <ion-list>
         <ion-item
           v-for="item in items_chapters"
@@ -81,6 +83,7 @@ import {
 } from "@ionic/vue";
 import axios from "axios";
 import { ref, onMounted } from "vue";
+import * as Realm from "realm-web";
 export default {
   name: "MediaDetail",
   components: {
@@ -107,6 +110,47 @@ export default {
     let item_detail = ref({ ...props.item });
     let items_chapters = ref([]);
     let isDisabled = ref(false);
+    let mediaFollowed = ref(false);
+    const app = Realm.getApp("application-habu-wbdom");
+    const mongodb = app.currentUser.mongoClient("mongodb-atlas");
+    async function addToFeed() {
+      try {
+        const collection = mongodb.db("habu-db1").collection("profile");
+        const resp = await collection.updateOne(
+          {
+            userID: app.currentUser.id,
+          },
+          {
+            $push: { feed: { id_mangadex: item_detail.value.id } },
+          }
+        );
+        if (resp) {
+          mediaFollowed.value = true;
+          console.log(resp);
+          console.log("ok");
+        } else {
+          console.log("no");
+        }
+      } catch {
+        console.log("error");
+      }
+    }
+    async function removeFromFeed() {
+      try {
+        const collection = mongodb.db("habu-db1").collection("profile");
+        const resp = await collection.update(
+          {
+            userID: app.currentUser.id,
+          },
+          {
+            $pull: { feed: { id_mangadex: item_detail.value.id } },
+          }
+        );
+        resp ? console.log("ok") : console.log("nok");
+      } catch {
+        console.log("error");
+      }
+    }
     function dismissModal() {
       modalController.dismiss();
     }
@@ -163,7 +207,8 @@ export default {
           console.log(err);
         });
     }
-    onMounted(() => {
+    onMounted(async () => {
+      await app.currentUser.refreshCustomData();
       axios
         .get(
           `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getDetail?id=${props.item.id}`
@@ -175,6 +220,16 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+      if (app.currentUser.customData.feed?.length > 0) {
+        console.log(app.currentUser.customData.feed);
+        app.currentUser.customData.feed.forEach((element) => {
+          console.log("wow");
+          if (element.id_mangadex == props.item.id) {
+            console.log("COPY");
+            mediaFollowed.value = true;
+          }
+        });
+      }
     });
     return {
       onMounted,
@@ -185,6 +240,9 @@ export default {
       isDisabled,
       loadData,
       getChapterPNG,
+      addToFeed,
+      mediaFollowed,
+      removeFromFeed,
     };
   },
 };

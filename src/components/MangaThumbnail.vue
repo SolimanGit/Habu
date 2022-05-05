@@ -11,7 +11,9 @@
 <script setup>
 import { defineProps } from "vue";
 import { IonThumbnail } from "@ionic/vue";
+
 const props = defineProps(["item"]);
+
 function find_cover(item) {
   const cover_id = item.relationships.find(
     (element) => element.type == "cover_art"

@@ -6,7 +6,7 @@
           <ion-title>Explorer</ion-title>
         </ion-toolbar>
       </ion-header>
-      <SearchBar />
+      <SearchBar @go-detail="(state, item) => goDetail(state, item)" />
       <ion-list>
         <ion-item
           v-for="item in items"

@@ -85,6 +85,9 @@ export default {
         console.log("Oops", error);
       }
     };
+    const doCreateAccount = () => {
+      router.push("CreateAccount");
+    };
     const doLoginAnilist = () => {
       //todo mettre le client dans une variable d'environnement
 
@@ -110,6 +113,7 @@ export default {
       password,
       doLogin,
       doLoginAnilist,
+      doCreateAccount,
     };
   },
 };

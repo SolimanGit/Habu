@@ -19,6 +19,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: 'createAccount',
+        name: 'CreateAccount',
         component: () => import('@/views/CreateAccount.vue'),
       },
       {
