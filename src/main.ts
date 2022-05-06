@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router';
 import * as Realm from "realm-web";
 import './index.css'
+import 'viewerjs/dist/viewer.css'
+import VueViewer from 'v-viewer'
  
 new Realm.App({ id: 'application-habu-wbdom' });
 
@@ -30,7 +32,8 @@ import './theme/variables.css';
 
 const app = createApp(App)
   .use(IonicVue)
-  .use(router);
+  .use(router)
+  .use(VueViewer);
   
 router.isReady().then(() => {
   app.mount('#app');

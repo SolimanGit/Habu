@@ -45,6 +45,7 @@ import {
   IonInfiniteScroll,
   IonInfiniteScrollContent,
   IonThumbnail,
+  IonItem,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 export default defineComponent({
@@ -62,6 +63,7 @@ export default defineComponent({
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     IonThumbnail,
+    IonItem,
   },
 });
 </script>

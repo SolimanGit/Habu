@@ -39,13 +39,16 @@
           v-for="item in items_chapters"
           :key="item.id"
           button
-          @click="getChapterPNG(item.id)"
+          @click="showChapter(item.id)"
         >
           <p>Ch.{{ item.attributes.chapter }}</p>
           <br />
           <p>{{ item.attributes.createdAt }}</p>
         </ion-item>
       </ion-list>
+      <!-- <ion-modal :is-open="openModalDetail">
+        <ChapterScreen :id="chapter_selected" />
+      </ion-modal> -->
       <ion-infinite-scroll
         @ionInfinite="loadData($event)"
         threshold="100px"
@@ -82,7 +85,7 @@ import {
   IonInfiniteScrollContent,
 } from "@ionic/vue";
 import axios from "axios";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, defineAsyncComponent } from "vue";
 import * as Realm from "realm-web";
 export default {
   name: "MediaDetail",
@@ -109,8 +112,12 @@ export default {
     console.log(props.item);
     let item_detail = ref({ ...props.item });
     let items_chapters = ref([]);
+    let chapter_selected = ref(null);
     let isDisabled = ref(false);
     let mediaFollowed = ref(false);
+    const openModalDetail = ref(false);
+    let currentModal = ref(null);
+
     const app = Realm.getApp("application-habu-wbdom");
     const mongodb = app.currentUser.mongoClient("mongodb-atlas");
     async function addToFeed() {
@@ -152,6 +159,7 @@ export default {
       }
     }
     function dismissModal() {
+      console.log("dismiss");
       modalController.dismiss();
     }
     function find_cover(item) {
@@ -177,6 +185,24 @@ export default {
           console.log(err);
         });
     }
+
+    async function showChapter(id) {
+      chapter_selected.value = id;
+      openModalDetail.value = true;
+      const modal = await modalController.create({
+        component: defineAsyncComponent(() =>
+          import("@/components/ChapterScreen.vue")
+        ),
+        componentProps: {
+          id: chapter_selected,
+        },
+      });
+      await modal.present();
+
+      currentModal.value = modal;
+      // router.push({ name: "ChapterScreen", params: { id: id } });
+      // router.push({ path: "/library" });
+    }
     function getChapterPNG(id) {
       axios
         .get(
@@ -190,6 +216,12 @@ export default {
             )
             .then((res) => {
               console.log("IMAGE", res);
+              // modalController.create({
+              //   component: "ModalChapter",
+              //   componentProps: {
+              //     image: res.data.data.image,
+              //   },
+              // });
             })
             .catch((err) => {
               console.log(err);
@@ -243,6 +275,9 @@ export default {
       addToFeed,
       mediaFollowed,
       removeFromFeed,
+      showChapter,
+      openModalDetail,
+      chapter_selected,
     };
   },
 };
