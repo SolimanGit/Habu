@@ -26,13 +26,6 @@
             >
           </ion-col>
         </ion-row>
-        <ion-row responsive-sm>
-          <ion-col>
-            <ion-button @click="doLoginAnilist()" expand="full"
-              >Log In with Anilist</ion-button
-            >
-          </ion-col>
-        </ion-row>
       </form>
     </ion-content>
   </ion-page>
@@ -87,25 +80,6 @@ export default {
     };
     const doCreateAccount = () => {
       router.push("CreateAccount");
-    };
-    const doLoginAnilist = () => {
-      //todo mettre le client dans une variable d'environnement
-
-      axios
-        .get(
-          `https://anilist.co/api/v2/oauth/authorize?client_id=8060&response_type=token`,
-          {
-            headers: {
-              "Access-Control-Allow-Credentials": true,
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
     };
     return {
       app,

@@ -176,9 +176,6 @@ export default {
         .then((res) => {
           items_chapters.value.push(...res.data.data);
           event.target.complete();
-          items_chapters.value.length == 200
-            ? this.isDisabled == true
-            : this.isDisabled == false;
         })
         .catch((err) => {
           console.log(err);

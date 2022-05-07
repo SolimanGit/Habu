@@ -122,9 +122,6 @@ export default defineComponent({
         .then((res) => {
           this.items.push(...res.data.data);
           e.target.complete();
-          this.items.length == 100
-            ? this.isDisabled == true
-            : this.isDisabled == false;
         })
         .catch((err) => {
           console.log(err);

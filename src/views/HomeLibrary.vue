@@ -62,6 +62,7 @@ const app = Realm.getApp("application-habu-wbdom");
 let items = ref([]);
 const openModalDetail = ref(false);
 const itemDetail = ref(null);
+let isDisabled = ref(false);
 
 const goDetail = (state, item) => {
   openModalDetail.value = state;
