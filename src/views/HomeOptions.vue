@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>Plus</ion-title>
+        <ion-title>Options</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>
@@ -18,6 +18,7 @@ import {
   IonTitle,
   IonToolbar,
   IonContent,
+  IonButton,
 } from "@ionic/vue";
 import axios from "axios";
 import * as Realm from "realm-web";

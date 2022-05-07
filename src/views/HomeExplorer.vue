@@ -6,10 +6,20 @@
           <ion-title>Explorer</ion-title>
         </ion-toolbar>
       </ion-header>
-      <SearchBar @go-detail="(state, item) => goDetail(state, item)" />
-      <ion-list>
+      <SearchBar @search="(item) => searchState(item)" />
+      <ion-list v-if="!search">
         <ion-item
           v-for="item in items"
+          :key="item.id"
+          button
+          @click="goDetail(true, item)"
+        >
+          <MangaThumbnail :item="item"></MangaThumbnail>
+        </ion-item>
+      </ion-list>
+      <ion-list v-else>
+        <ion-item
+          v-for="item in items_search"
           :key="item.id"
           button
           @click="goDetail(true, item)"
@@ -59,24 +69,18 @@ export default defineComponent({
     return {
       items: [],
       isDisabled: false,
+      items_search: [],
+      search: false,
     };
   },
   setup() {
-    // function goDetail(state,item) {
-    //   provide("machin", "itemmmmmmmm");
-    //   this.$router.push({
-    //     name: "MediaDetail",
-    //     params: {
-    //       id: item.id,
-    //     },
-    //   });
-    // }
     const openModalDetail = ref(false);
     const itemDetail = ref(null);
     const goDetail = (state, item) => {
       openModalDetail.value = state;
       item ? (itemDetail.value = item) : null;
     };
+
     return {
       goDetail,
       openModalDetail,
@@ -100,6 +104,15 @@ export default defineComponent({
     console.log("Home page will enter");
   },
   methods: {
+    searchState(item) {
+      console.log(item);
+      if (item?.length > 0) {
+        this.items_search = item;
+        this.search = true;
+      } else {
+        this.search = false;
+      }
+    },
     loadData(e) {
       axios
         .get(

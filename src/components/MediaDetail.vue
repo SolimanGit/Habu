@@ -5,7 +5,7 @@
         <ion-buttons slot="end">
           <ion-button @click="dismissModal()">Close</ion-button>
         </ion-buttons>
-        <ion-title>truc</ion-title>
+        <ion-title>Manga</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content class="text-3xl font-bold underline">
@@ -31,7 +31,6 @@
           </ion-col>
         </ion-row>
       </ion-grid>
-      <h1 class="text-3xl underline text-red">OKOKOOK</h1>
       <ion-button v-if="!mediaFollowed" @click="addToFeed()">Follow</ion-button>
       <ion-button v-else @click="removeFromFeed()">unfollow</ion-button>
       <ion-list>

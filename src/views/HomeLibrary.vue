@@ -6,6 +6,9 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
+      <ion-refresher slot="fixed" @ionRefresh="getFeed($event)">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
       <ion-list>
         <ion-item
           v-for="item in items"
@@ -21,7 +24,7 @@
       </ion-modal>
 
       <ion-infinite-scroll
-        @ionInfinite="getfeed()"
+        @ionInfinite="getFeed()"
         threshold="100px"
         id="infinite-scroll"
         :disabled="isDisabled"
@@ -50,6 +53,8 @@ import {
   IonInfiniteScrollContent,
   IonItem,
   IonModal,
+  IonRefresher,
+  IonRefresherContent,
 } from "@ionic/vue";
 import { onMounted, ref } from "vue";
 import axios from "axios";
@@ -57,11 +62,12 @@ const app = Realm.getApp("application-habu-wbdom");
 let items = ref([]);
 const openModalDetail = ref(false);
 const itemDetail = ref(null);
+
 const goDetail = (state, item) => {
   openModalDetail.value = state;
   item ? (itemDetail.value = item) : null;
 };
-const getfeed = async () => {
+const getFeed = async (event = null) => {
   let ids = null;
   await app.currentUser.refreshCustomData();
   if (app.currentUser.customData.feed?.length > 0) {
@@ -78,6 +84,9 @@ const getfeed = async () => {
       .then((response) => {
         items.value.push(...response.data.data);
         console.log("WOWOWOOWWOOISIAZISDAZDAZFF", response);
+        if (event) {
+          event.target.complete();
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -86,7 +95,7 @@ const getfeed = async () => {
 };
 onMounted(async () => {
   try {
-    await getfeed();
+    await getFeed();
   } catch (e) {
     console.log(e);
   }

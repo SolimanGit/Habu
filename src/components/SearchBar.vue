@@ -33,16 +33,6 @@
           >
           </ion-searchbar>
         </ion-item> -->
-        <ion-list slot="content">
-          <ion-item
-            v-for="item in items"
-            :key="item.id"
-            button
-            @click="$emit('goDetail', true, item)"
-          >
-            <MangaThumbnail :item="item"></MangaThumbnail>
-          </ion-item>
-        </ion-list>
       </ion-accordion>
     </ion-accordion-group>
   </ion-list>
@@ -57,10 +47,11 @@ import {
   IonAccordionGroup,
   IonListHeader,
 } from "@ionic/vue";
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import axios from "axios";
 
 let items = ref([]);
+const emit = defineEmits(["search"]);
 
 const searchAccordion = ref();
 function onChange(event) {
@@ -74,10 +65,13 @@ function onChange(event) {
       .then((res) => {
         console.log("adzadadad", res.data.data);
         items.value = res.data.data ?? [];
+        emit("search", items.value);
       })
       .catch((err) => {
         console.log(err);
       });
+  } else {
+    emit("search", []);
   }
 
   if (searchAccordion.value) {
