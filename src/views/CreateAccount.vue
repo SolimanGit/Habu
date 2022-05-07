@@ -30,10 +30,6 @@
             <ion-button @click="createAccount()" expand="full"
               >SignUp</ion-button
             >
-
-            <!-- <ion-button @click="" color="light" expand="full"
-              >Create Account</ion-button
-            > -->
           </ion-col>
         </ion-row>
       </form>
@@ -76,6 +72,7 @@ export default {
     const lastName = ref("");
     const router = useRouter();
 
+    //Fonction de création de compte
     const createAccount = async () => {
       try {
         //Create user
@@ -85,7 +82,6 @@ export default {
         await app.logIn(
           Realm.Credentials.emailPassword(email.value, password.value)
         );
-
         //save profile information
         const mongodb = app.currentUser.mongoClient("mongodb-atlas");
         const collection = mongodb.db("habu-db1").collection("profile");
@@ -94,7 +90,7 @@ export default {
           userID: app.currentUser.id,
           firstName: firstName.value,
           lastName: lastName.value,
-          feed: []
+          feed: [],
         });
         if (res) router.push("explorer");
       } catch (error) {

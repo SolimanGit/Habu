@@ -14,12 +14,11 @@ import { IonThumbnail } from "@ionic/vue";
 
 const props = defineProps(["item"]);
 
+//Fonction de recherche de la cover dans l'objet de l'item
 function find_cover(item) {
   const cover_id = item.relationships.find(
     (element) => element.type == "cover_art"
   );
-  // const fileName = cover_id.attributes.fileName.split('.')
-  // console.log(fileName)
   return cover_id.attributes.fileName;
 }
 </script>

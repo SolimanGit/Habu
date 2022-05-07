@@ -64,10 +64,13 @@ const openModalDetail = ref(false);
 const itemDetail = ref(null);
 let isDisabled = ref(false);
 
+//Fonction d'affichage de la modal de detail du manga
 const goDetail = (state, item) => {
   openModalDetail.value = state;
   item ? (itemDetail.value = item) : null;
 };
+
+//Fonction qui récupère le feed de l'utilisateur
 const getFeed = async (event = null) => {
   let ids = null;
   await app.currentUser.refreshCustomData();
@@ -76,7 +79,6 @@ const getFeed = async (event = null) => {
       (map_item) => "&ids[]=" + map_item.id_mangadex
     );
     ids = map_format.join("");
-    console.log(ids);
     axios
       .post(
         `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getMediaFeed?offset=${items.value.length}`,
@@ -84,7 +86,6 @@ const getFeed = async (event = null) => {
       )
       .then((response) => {
         items.value.push(...response.data.data);
-        console.log("WOWOWOOWWOOISIAZISDAZDAZFF", response);
         if (event) {
           event.target.complete();
         }
@@ -94,7 +95,10 @@ const getFeed = async (event = null) => {
       });
   }
 };
+
+//Fonction qui appel le feed de l'utilisateur
 onMounted(async () => {
+  app.currentUser.refreshCustomData();
   try {
     await getFeed();
   } catch (e) {

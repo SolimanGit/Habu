@@ -76,6 +76,8 @@ export default defineComponent({
   setup() {
     const openModalDetail = ref(false);
     const itemDetail = ref(null);
+
+    //Fonction pour afficher les détails d'un manga
     const goDetail = (state, item) => {
       openModalDetail.value = state;
       item ? (itemDetail.value = item) : null;
@@ -87,25 +89,22 @@ export default defineComponent({
       itemDetail,
     };
   },
+  //Mounted pour ajouter les mangas à la liste
   mounted() {
     axios
       .get(
         `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/mangas`
       )
       .then((res) => {
-        console.log(res);
         this.items.push(...res.data.data);
       })
       .catch((err) => {
         console.log(err);
       });
   },
-  ionViewWillEnter() {
-    console.log("Home page will enter");
-  },
   methods: {
+    //Fonction pour changer la vue de la page à partir de la recherche
     searchState(item) {
-      console.log(item);
       if (item?.length > 0) {
         this.items_search = item;
         this.search = true;
@@ -113,10 +112,10 @@ export default defineComponent({
         this.search = false;
       }
     },
+    //Fonction pour get les données de l'api et les ajouter à la liste
     loadData(e) {
       axios
         .get(
-          // `https://api.mangadex.org/manga?order[followedCount]=desc&limit=30&includes[]=cover_art&offset=${this.items.length}`
           `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/mangas?offset=${this.items.length}`
         )
         .then((res) => {

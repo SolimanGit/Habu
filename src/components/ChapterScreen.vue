@@ -1,10 +1,9 @@
 <template>
   <ion-content :scroll-events="true">
-    <!-- directive -->
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-buttons slot="end">
-          <ion-button @click="dismiss()">Close</ion-button>
+          <ion-button @click="dismiss()">Fermer</ion-button>
         </ion-buttons>
         <ion-title>Chapitres</ion-title>
       </ion-toolbar>
@@ -15,14 +14,10 @@
     >
       <img class="w-3/12" v-for="src in images" :key="src" :src="src" />
     </div>
-    <!-- component -->
-    <!-- <viewer :images="images">
-      <img v-for="src in images" :key="src" :src="src" />
-    </viewer> -->
   </ion-content>
 </template>
 <script setup>
-import { onMounted, ref, defineProps, defineComponent } from "vue";
+import { onMounted, ref, defineProps } from "vue";
 import {
   IonContent,
   IonHeader,
@@ -50,17 +45,12 @@ let options = {
   fullscreen: true,
   keyboard: true,
 };
-function show() {
-  this.$viewerApi({
-    images: this.images,
-  });
-}
+//Fonction de chargement des images du chapitre
 async function call() {
   try {
     const hash = await axios.get(
       `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getChapters?id=${props.id.value}`
     );
-    console.log(hash);
     if (hash) {
       let temp = [];
       await Promise.all(
@@ -69,23 +59,23 @@ async function call() {
             `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getPages?baseUrl=${hash.data.baseUrl}&hash=${hash.data.chapter.hash}&pageId=${hash.data.chapter.data[index]}`
           );
           if (image) {
-            console.log(image);
             temp.push(
               "data:image/png;base64," + image.data.body.$binary.base64
             );
           }
         })
       );
-      console.log(temp);
       images.value.push(...temp.reverse());
     }
   } catch (e) {
     console.log(e);
   }
 }
+//Mounted appel de la fonction de chargement des images
 onMounted(async () => {
   await call();
 });
+//Fonctione pour fermer la modal
 function dismiss() {
   modalController.dismiss();
 }

@@ -66,6 +66,7 @@ export default {
     const email = ref("");
     const router = useRouter();
 
+    // Fonction de connexion de l'utilisateur
     const doLogin = async () => {
       const credentials = Realm.Credentials.emailPassword(
         email.value,

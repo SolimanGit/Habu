@@ -3,7 +3,7 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-buttons slot="end">
-          <ion-button @click="dismissModal()">Close</ion-button>
+          <ion-button @click="dismissModal()">Fermer</ion-button>
         </ion-buttons>
         <ion-title>Manga</ion-title>
       </ion-toolbar>
@@ -40,14 +40,14 @@
           button
           @click="showChapter(item.id)"
         >
-          <p>Ch.{{ item.attributes.chapter }}</p>
-          <br />
-          <p>{{ item.attributes.createdAt }}</p>
+          <div>
+            <p>Ch.{{ item.attributes.chapter }}</p>
+            <p class="font-light">
+              {{ formatDate(item.attributes.createdAt) }}
+            </p>
+          </div>
         </ion-item>
       </ion-list>
-      <!-- <ion-modal :is-open="openModalDetail">
-        <ChapterScreen :id="chapter_selected" />
-      </ion-modal> -->
       <ion-infinite-scroll
         @ionInfinite="loadData($event)"
         threshold="100px"
@@ -108,7 +108,6 @@ export default {
   },
   props: ["item"],
   setup(props) {
-    console.log(props.item);
     let item_detail = ref({ ...props.item });
     let items_chapters = ref([]);
     let chapter_selected = ref(null);
@@ -119,6 +118,8 @@ export default {
 
     const app = Realm.getApp("application-habu-wbdom");
     const mongodb = app.currentUser.mongoClient("mongodb-atlas");
+
+    //Fonction pour ajouter dans le feed de l'utilisateur un manga
     async function addToFeed() {
       try {
         const collection = mongodb.db("habu-db1").collection("profile");
@@ -127,24 +128,38 @@ export default {
             userID: app.currentUser.id,
           },
           {
-            $push: { feed: { id_mangadex: item_detail.value.id } },
+            $push: {
+              feed: {
+                id_mangadex: item_detail.value.id,
+                id_anilist: item_detail.value.attributes.links.al,
+              },
+            },
           }
         );
-        if (resp) {
-          mediaFollowed.value = true;
-          console.log(resp);
-          console.log("ok");
-        } else {
-          console.log("no");
-        }
+        resp ? (mediaFollowed.value = true) : null;
       } catch {
         console.log("error");
       }
     }
+
+    //Fonction pour formater une date en dd/mm/yyyy
+    function formatDate(date) {
+      var d = new Date(date),
+        month = "" + (d.getMonth() + 1),
+        day = "" + d.getDate(),
+        year = d.getFullYear();
+
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
+
+      return [day, month, year].join("/");
+    }
+
+    //Fonction qui retire du feed d'un utilisateur un manga
     async function removeFromFeed() {
       try {
         const collection = mongodb.db("habu-db1").collection("profile");
-        const resp = await collection.update(
+        const resp = await collection.updateOne(
           {
             userID: app.currentUser.id,
           },
@@ -152,23 +167,26 @@ export default {
             $pull: { feed: { id_mangadex: item_detail.value.id } },
           }
         );
-        resp ? console.log("ok") : console.log("nok");
+        resp ? (mediaFollowed.value = false) : null;
       } catch {
         console.log("error");
       }
     }
+
+    //Fonction pour fermer une modal
     function dismissModal() {
-      console.log("dismiss");
       modalController.dismiss();
     }
+
+    //Fonction pour find les covers des mangas
     function find_cover(item) {
       const cover_id = item.relationships.find(
         (element) => element.type == "cover_art"
       );
       return cover_id.attributes.fileName;
     }
+    //Fonction pour récupérer les chapitres dynamiquement
     function loadData(event) {
-      console.log("OULALALLALALA", items_chapters.value.length);
       axios
         .get(
           `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getDetail?id=${props.item.id}&offset=${items_chapters.value.length}`
@@ -182,6 +200,7 @@ export default {
         });
     }
 
+    //Fonction pour afficher le chapitre dans une modal
     async function showChapter(id) {
       chapter_selected.value = id;
       openModalDetail.value = true;
@@ -194,47 +213,10 @@ export default {
         },
       });
       await modal.present();
-
       currentModal.value = modal;
-      // router.push({ name: "ChapterScreen", params: { id: id } });
-      // router.push({ path: "/library" });
     }
-    function getChapterPNG(id) {
-      axios
-        .get(
-          `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getChapters?id=${id}`
-        )
-        .then((res) => {
-          console.log(res);
-          axios
-            .get(
-              `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getPages?baseUrl=${res.data.baseUrl}&hash=${res.data.chapter.hash}&pageId=${res.data.chapter.data[0]}`
-            )
-            .then((res) => {
-              console.log("IMAGE", res);
-              // modalController.create({
-              //   component: "ModalChapter",
-              //   componentProps: {
-              //     image: res.data.data.image,
-              //   },
-              // });
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-          // modalController.create({
-          //   component: "Chapter",
-          //   componentProps: {
-          //     chapter: res.data.data,
-          //   },
-          // }).then((modal) => {
-          //   modal.present();
-          // });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+
+    //Mounter qui permet de charger les données
     onMounted(async () => {
       await app.currentUser.refreshCustomData();
       axios
@@ -242,18 +224,14 @@ export default {
           `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getDetail?id=${props.item.id}`
         )
         .then((res) => {
-          console.log(res);
           items_chapters.value.push(...res.data.data);
         })
         .catch((err) => {
           console.log(err);
         });
       if (app.currentUser.customData.feed?.length > 0) {
-        console.log(app.currentUser.customData.feed);
         app.currentUser.customData.feed.forEach((element) => {
-          console.log("wow");
           if (element.id_mangadex == props.item.id) {
-            console.log("COPY");
             mediaFollowed.value = true;
           }
         });
@@ -267,13 +245,13 @@ export default {
       items_chapters,
       isDisabled,
       loadData,
-      getChapterPNG,
       addToFeed,
       mediaFollowed,
       removeFromFeed,
       showChapter,
       openModalDetail,
       chapter_selected,
+      formatDate,
     };
   },
 };
