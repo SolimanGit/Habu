@@ -86,7 +86,6 @@ export default {
       email,
       password,
       doLogin,
-      doLoginAnilist,
       doCreateAccount,
     };
   },
