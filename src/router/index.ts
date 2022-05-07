@@ -1,26 +1,19 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 import HomeTabs from '../views/HomeTabs.vue'
+import * as Realm from "realm-web";
+const app = Realm.getApp("application-habu-wbdom");
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
     component: HomeTabs,
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
         redirect: 'library',
-      },
-      {
-        path: 'log',
-        name: 'Log',
-        component: () => import('@/views/LogIn.vue'),
-      },
-      {
-        path: 'createAccount',
-        name: 'CreateAccount',
-        component: () => import('@/views/CreateAccount.vue'),
       },
       {
         path: 'library',
@@ -47,6 +40,16 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/createAccount',
+    name: 'CreateAccount',
+    component: () => import('@/views/CreateAccount.vue'),
+  },
+  {
+    path: '/log',
+    name: 'Log',
+    component: () => import('@/views/LogIn.vue'),
+  },
+  {
     path: '/message/:id',
     component: () => import('../views/ViewMessagePage.vue')
   }
@@ -55,6 +58,11 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+router.beforeEach((to, from) => {
+  if (!app.currentUser && to.meta.requiresAuth) {
+    return router.push({ name: "Log" });
+  }
 })
 
 export default router
