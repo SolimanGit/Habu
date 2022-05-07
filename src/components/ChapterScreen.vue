@@ -22,7 +22,7 @@
   </ion-content>
 </template>
 <script setup>
-import { onMounted, ref, defineProps } from "vue";
+import { onMounted, ref, defineProps, defineComponent } from "vue";
 import {
   IonContent,
   IonHeader,
@@ -55,34 +55,36 @@ function show() {
     images: this.images,
   });
 }
-onMounted(() => {
-  axios
-    .get(
+async function call() {
+  try {
+    const hash = await axios.get(
       `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getChapters?id=${props.id.value}`
-    )
-    .then((res) => {
-      console.log(res);
-      // hash = res;
-      //todo A VOIR POUR AFFICHER DU BASE 64
-      res.data.chapter?.data.forEach((element, index) => {
-        axios
-          .get(
-            `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getPages?baseUrl=${res.data.baseUrl}&hash=${res.data.chapter.hash}&pageId=${res.data.chapter.data[index]}`
-          )
-          .then((res) => {
-            console.log("IMAGE", res);
-            images.value.push(
-              "data:image/png;base64," + res.data.body.$binary.base64
+    );
+    console.log(hash);
+    if (hash) {
+      let temp = [];
+      await Promise.all(
+        hash.data.chapter?.data.map(async (element, index) => {
+          const image = await axios.get(
+            `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getPages?baseUrl=${hash.data.baseUrl}&hash=${hash.data.chapter.hash}&pageId=${hash.data.chapter.data[index]}`
+          );
+          if (image) {
+            console.log(image);
+            temp.push(
+              "data:image/png;base64," + image.data.body.$binary.base64
             );
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+          }
+        })
+      );
+      console.log(temp);
+      images.value.push(...temp.reverse());
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+onMounted(async () => {
+  await call();
 });
 function dismiss() {
   modalController.dismiss();
