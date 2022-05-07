@@ -7,20 +7,21 @@
     </ion-header>
     <ion-content>
       <ion-list>
-        <ion-item v-for="item in items" :key="item.id">
-          <ion-thumbnail slot="start">
-            <img
-              :src="`https://uploads.mangadex.org/covers/${
-                item.id
-              }/${find_cover(item)}.256.jpg`"
-            />
-          </ion-thumbnail>
-          {{ item.attributes.title }}
+        <ion-item
+          v-for="item in items"
+          :key="item.id"
+          button
+          @click="goDetail(true, item)"
+        >
+          <MangaThumbnail :item="item"></MangaThumbnail>
         </ion-item>
       </ion-list>
+      <ion-modal :is-open="openModalDetail" @didDismiss="goDetail(false)">
+        <MediaDetail :item="itemDetail" />
+      </ion-modal>
 
       <ion-infinite-scroll
-        @ionInfinite="loadData($event)"
+        @ionInfinite="getfeed()"
         threshold="100px"
         id="infinite-scroll"
         :disabled="isDisabled"
@@ -34,7 +35,10 @@
     </ion-content>
   </ion-page>
 </template>
-<script>
+<script setup>
+import * as Realm from "realm-web";
+import MediaDetail from "@/components/MediaDetail";
+import MangaThumbnail from "@/components/MangaThumbnail";
 import {
   IonPage,
   IonHeader,
@@ -44,27 +48,48 @@ import {
   IonContent,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  IonThumbnail,
   IonItem,
+  IonModal,
 } from "@ionic/vue";
-import { defineComponent } from "vue";
-export default defineComponent({
-  name: "HomeLibrary",
-  data() {
-    return {};
-  },
-  components: {
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonList,
-    IonContent,
-    IonInfiniteScroll,
-    IonInfiniteScrollContent,
-    IonThumbnail,
-    IonItem,
-  },
+import { onMounted, ref } from "vue";
+import axios from "axios";
+const app = Realm.getApp("application-habu-wbdom");
+let items = ref([]);
+const openModalDetail = ref(false);
+const itemDetail = ref(null);
+const goDetail = (state, item) => {
+  openModalDetail.value = state;
+  item ? (itemDetail.value = item) : null;
+};
+const getfeed = async () => {
+  let ids = null;
+  await app.currentUser.refreshCustomData();
+  if (app.currentUser.customData.feed?.length > 0) {
+    const map_format = app.currentUser.customData.feed?.map(
+      (map_item) => "&ids[]=" + map_item.id_mangadex
+    );
+    ids = map_format.join("");
+    console.log(ids);
+    axios
+      .post(
+        `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getMediaFeed?offset=${items.value.length}`,
+        { ids: ids }
+      )
+      .then((response) => {
+        items.value.push(...response.data.data);
+        console.log("WOWOWOOWWOOISIAZISDAZDAZFF", response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+};
+onMounted(async () => {
+  try {
+    await getfeed();
+  } catch (e) {
+    console.log(e);
+  }
 });
 </script>
 <style lang=""></style>
