@@ -41,8 +41,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/HomeNews.vue'),
       },
       {
-        path: 'plus',
-        component: () => import('@/views/HomePlus.vue'),
+        path: 'options',
+        component: () => import('@/views/HomeOptions.vue'),
       },
     ],
   },
