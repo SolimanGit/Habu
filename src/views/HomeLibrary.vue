@@ -94,6 +94,9 @@ const getFeed = async (event = null) => {
         console.log(error);
       });
   }
+  if (event) {
+    event.target.complete();
+  }
 };
 
 //Fonction qui appel le feed de l'utilisateur
