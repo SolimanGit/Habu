@@ -28,11 +28,48 @@
                 <p>{{ item_detail.attributes.status }}</p>
               </ion-card-content>
             </ion-card>
+            <div>
+              <ion-fab
+                vertical="end"
+                horizontal="end"
+                v-if="!mediaFollowed"
+                @click="addToFeed()"
+              >
+                <ion-fab-button class="w-10 h-10">
+                  <ion-icon :icon="add"></ion-icon>
+                </ion-fab-button>
+              </ion-fab>
+              <ion-fab
+                vertical="end"
+                horizontal="end"
+                v-else
+                @click="removeFromFeed()"
+              >
+                <ion-fab-button color="success" class="w-10 h-10">
+                  <ion-icon :icon="checkmarkOutline"></ion-icon>
+                </ion-fab-button>
+              </ion-fab>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-chip
+              v-for="item in item_detail.attributes.tags"
+              :key="item.id"
+              color="tertiary"
+            >
+              <ion-label>{{ item.attributes.name?.en }}</ion-label>
+            </ion-chip>
           </ion-col>
         </ion-row>
       </ion-grid>
-      <ion-button v-if="!mediaFollowed" @click="addToFeed()">Follow</ion-button>
-      <ion-button v-else @click="removeFromFeed()">unfollow</ion-button>
+      <p
+        v-if="!items_chapters.length > 0"
+        class="text-base text-center font-light"
+      >
+        Oh ! Il n'y a pas de chapitre
+      </p>
       <ion-list>
         <ion-item
           v-for="item in items_chapters"
@@ -82,10 +119,17 @@ import {
   IonItem,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonChip,
+  IonLabel,
+  IonFab,
+  IonFabButton,
+  IonIcon,
 } from "@ionic/vue";
+
 import axios from "axios";
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import * as Realm from "realm-web";
+import { add, checkmarkOutline } from "ionicons/icons";
 export default {
   name: "MediaDetail",
   components: {
@@ -105,6 +149,11 @@ export default {
     IonItem,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
+    IonChip,
+    IonLabel,
+    IonFab,
+    IonFabButton,
+    IonIcon,
   },
   props: ["item"],
   setup(props) {
@@ -252,6 +301,8 @@ export default {
       openModalDetail,
       chapter_selected,
       formatDate,
+      add,
+      checkmarkOutline,
     };
   },
 };
