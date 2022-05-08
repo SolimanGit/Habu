@@ -5,9 +5,12 @@
         <ion-title>Options</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
-      <ion-button @click="Anilist()">Se connecter à AniList</ion-button>
-      <ion-button color="danger" @click="logout()">Se déconnecter</ion-button>
+    <ion-content fullscreen>
+      <div class="flex flex-col justify-center h-full">
+        <ion-button color="danger" @click="logout()">Se déconnecter</ion-button
+        ><br />
+        <ion-button @click="Anilist()">Se connecter à AniList</ion-button>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -19,6 +22,9 @@ import {
   IonToolbar,
   IonContent,
   IonButton,
+  IonGrid,
+  IonRow,
+  IonCol,
 } from "@ionic/vue";
 import * as Realm from "realm-web";
 import { useRouter } from "vue-router";
