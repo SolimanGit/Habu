@@ -97,6 +97,14 @@
         >
         </ion-infinite-scroll-content>
       </ion-infinite-scroll>
+      <ion-toast
+        :is-open="isOpenRef"
+        message="Ajouté dans la librairie"
+        :duration="2000"
+        @didDismiss="setOpen(false)"
+        position="top"
+      >
+      </ion-toast>
     </ion-content>
   </ion-page>
 </template>
@@ -124,6 +132,7 @@ import {
   IonFab,
   IonFabButton,
   IonIcon,
+  IonToast,
 } from "@ionic/vue";
 
 import axios from "axios";
@@ -154,6 +163,7 @@ export default {
     IonFab,
     IonFabButton,
     IonIcon,
+    IonToast,
   },
   props: ["item"],
   setup(props) {
@@ -164,6 +174,9 @@ export default {
     let mediaFollowed = ref(false);
     const openModalDetail = ref(false);
     let currentModal = ref(null);
+    const isOpenRef = ref(false);
+
+    const setOpen = (state) => (isOpenRef.value = state);
 
     const app = Realm.getApp("application-habu-wbdom");
     const mongodb = app.currentUser.mongoClient("mongodb-atlas");
@@ -185,7 +198,10 @@ export default {
             },
           }
         );
-        resp ? (mediaFollowed.value = true) : null;
+        if (resp) {
+          mediaFollowed.value = true;
+          isOpenRef.value = true;
+        }
       } catch {
         console.log("error");
       }
@@ -303,6 +319,8 @@ export default {
       formatDate,
       add,
       checkmarkOutline,
+      setOpen,
+      isOpenRef,
     };
   },
 };
