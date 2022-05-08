@@ -8,6 +8,11 @@
         <ion-title>Chapitres</ion-title>
       </ion-toolbar>
     </ion-header>
+    <ion-progress-bar
+      v-if="progressState"
+      type="indeterminate"
+    ></ion-progress-bar>
+
     <div
       class="images flex flex-wrap w-full justify-start"
       v-viewer.rebuild="options"
@@ -26,10 +31,12 @@ import {
   IonButton,
   IonTitle,
   modalController,
+  IonProgressBar,
 } from "@ionic/vue";
 import axios from "axios";
 const props = defineProps(["id"]);
 let images = ref([]);
+let progressState = ref(true);
 let options = {
   inline: false,
   button: false,
@@ -37,11 +44,11 @@ let options = {
   title: false,
   toolbar: false,
   tooltip: false,
-  movable: false,
+  movable: true,
   zoomable: true,
   rotatable: false,
   scalable: false,
-  transition: false,
+  transition: true,
   fullscreen: true,
   keyboard: true,
 };
@@ -53,27 +60,29 @@ async function call() {
     );
     if (hash) {
       let temp = [];
-      await Promise.all(
+      temp.push(
         hash.data.chapter?.data.map(async (element, index) => {
           const image = await axios.get(
             `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getPages?baseUrl=${hash.data.baseUrl}&hash=${hash.data.chapter.hash}&pageId=${hash.data.chapter.data[index]}`
           );
           if (image) {
-            temp.push(
-              "data:image/png;base64," + image.data.body.$binary.base64
-            );
+            return "data:image/png;base64," + image.data.body.$binary.base64;
           }
         })
       );
-      images.value.push(...temp.reverse());
+
+      Promise.all(...temp).then((values) => {
+        progressState.value = false;
+        images.value.push(...values);
+      });
     }
   } catch (e) {
     console.log(e);
   }
 }
 //Mounted appel de la fonction de chargement des images
-onMounted(async () => {
-  await call();
+onMounted(() => {
+  call();
 });
 //Fonctione pour fermer la modal
 function dismiss() {
