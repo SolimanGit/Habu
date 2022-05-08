@@ -19,6 +19,7 @@
           <MangaThumbnail :item="item"></MangaThumbnail>
         </ion-item>
       </ion-list>
+      <p class="text-center mt-5 opacity-60">Slide vers le bas pour refresh</p>
       <ion-modal :is-open="openModalDetail" @didDismiss="goDetail(false)">
         <MediaDetail :item="itemDetail" />
       </ion-modal>
