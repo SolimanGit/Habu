@@ -66,7 +66,10 @@ async function call() {
             `https://data.mongodb-api.com/app/application-habu-wbdom/endpoint/getPages?baseUrl=${hash.data.baseUrl}&hash=${hash.data.chapter.hash}&pageId=${hash.data.chapter.data[index]}`
           );
           if (image) {
-            return "data:image/png;base64," + image.data.body.$binary.base64;
+            // if (image.data.body.$binary.base64) {
+            //   return "data:image/png;base64," + image.data.body.$binary.base64;
+            // } else {
+            return "data:image/png;base64," + image.data.body.Data;
           }
         })
       );
